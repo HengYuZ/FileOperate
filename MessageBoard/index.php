@@ -40,67 +40,81 @@
         }
 
     </style>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript">
+        function sendMsg() {
+            var url = 'msgHandle.php';
+            var username = $("#username").val();
+            var content = $("#content").val();
+            var data = {username, content};
+            $.post(url, data, function (res) {
+                var jsonObj = JSON.parse(res);
+                var dl = $("<dl>");
+                dl.appendTo($("#commentArea"));
+                for (var i = 0; i < jsonObj.length; i++) {
+                    if (i % 3 == 0)
+                        var dd = $("<dd>" + jsonObj[i] + jsonObj[i + 1] + "</dd>");
+                    else if (i % 3 == 2)
+                        var dd = $("<dd>" + jsonObj[i] + "</dd>");
+                    dd.appendTo(dl);
+                }
+                $("#commentArea").append("</dl>");
+                window.location.reload();
+            });
+        }
+    </script>
 </head>
 
 <body>
-
-<h1>我的留言本</h1>
-<dl>
-    <?php
-    $tmpArr = array();
-    $filePoint = fopen('msgContent.txt', 'r');
-    if ($filePoint) {
-        while (($buffer = fgets($filePoint, 4096)) !== false) {
-            $tmpArr[] = $buffer;
-        }
+<script type="text/javascript">
+    window.onload=function () {
+        var url = 'msgHandle.php';
+        var username = '';
+        var content = '';
+        var data = {username, content};
+        $.post(url, data, function (res) {
+            var jsonObj = JSON.parse(res);
+            var dl = $("<dl>");
+            dl.appendTo($("#commentArea"));
+            for (var i = 0; i < jsonObj.length; i++) {
+                if (i % 3 == 0)
+                    var dd = $("<dd>" + jsonObj[i] + jsonObj[i + 1] + "</dd>");
+                else if (i % 3 == 2)
+                    var dd = $("<dd>" + jsonObj[i] + "</dd>");
+                dd.appendTo(dl);
+            }
+            $("#commentArea").append("</dl>");
+        });
     }
-    fclose($filePoint);
-    $tmpStr = '';
-    foreach ($tmpArr as $key => $msgInfo) {
-    ?>
-    <dt>
-        <?php
-        if ($key % 3 == 0) {
-            $tmpStr = $msgInfo;
-        }
-        if ($key % 3 == 1) {
-            $tmpStr .= $msgInfo . ":";
-        }
-        if ($key % 3 == 2)
-            echo $tmpStr;
-        ?>
-    </dt>
-    <dd>
-        <?php
-        if ($key % 3 == 2) {
-            echo $msgInfo;
-        }
-        } ?>
-    </dd>
-</dl>
+</script>
+<h1>我的留言本</h1>
+<div id="commentArea">
+
+</div>
 
 <h2>我要留言</h2>
-<form action="msgHandle.php" method="post">
+<form>
     <table>
         <tbody>
         <tr>
             <th>昵称：</th>
-            <td><input class="txt" type="text" name="username"></td>
+            <td><input class="txt" type="text" id="username" name="username"></td>
         </tr>
         <tr>
             <th>内容：</th>
             <td>
-                <textarea name="content"></textarea>
+                <textarea type="text" id="content"></textarea>
             </td>
         </tr>
         <tr>
             <td>&nbsp;</td>
             <td>
-                <input type="submit" value="提交"></button>
+                <button type="button" onclick="sendMsg()">提交</button>
             </td>
         </tr>
         </tbody>
     </table>
 </form>
+
 </body>
 </html>

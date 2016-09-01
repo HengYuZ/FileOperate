@@ -12,13 +12,12 @@ class MessageBoard
     private $content;
     private $msgTimestamp;
 
-    public function __construct($username, $content)
+    //初始化留言
+    public function getContent($username, $content)
     {
-        if ($username && $content) {
-            $this->username = htmlspecialchars($username);
-            $this->content = htmlspecialchars($content);
-            $this->msgTimestamp = date('Y-m-d H:i:s', time());
-        }
+        $this->username = htmlspecialchars($username);
+        $this->content = htmlspecialchars($content);
+        $this->msgTimestamp = date('Y-m-d H:i:s', time());
     }
 
     //把留言写入文件
@@ -30,9 +29,28 @@ class MessageBoard
         fwrite($filePoint, $this->content . "\r\n");
         fclose($filePoint);
     }
+
+    //把留言读出来
+    public function ReadHandle()
+    {
+        $tmpArr = array();
+        $filePoint = fopen('msgContent.txt', 'r');
+        if ($filePoint) {
+            while (($buffer = fgets($filePoint, 4096)) !== false) {
+                $tmpArr[] = $buffer;
+            }
+        }
+        fclose($filePoint);
+        $jsonStr = json_encode($tmpArr);
+        echo $jsonStr;
+    }
 }
 
 date_default_timezone_set('UTC');
-$messageBoardObj = new MessageBoard($_POST["username"], $_POST["content"]);
-$messageBoardObj->writeHandle();
-echo "<script>window.location='index.php'</script>";
+$messageBoardObj = new MessageBoard();
+//判空处理
+if (!empty($_POST["username"]) && !empty($_POST["content"])) {
+    $messageBoardObj->getContent($_POST["username"], $_POST["content"]);
+    $messageBoardObj->writeHandle();
+}
+$messageBoardObj->ReadHandle();
