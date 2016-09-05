@@ -1,12 +1,8 @@
 {
   "name":"FileOperate",
-  "repositories":[
-    {
-      "type":"vcs",
-      "url":"https://github.com/HengYuZ/FileOperate"
-    }
-  ],
-  "require":{
-    "FileOperate":"master"
+  "type":"git",
+  "version":"1.0.0",
+  "autoload":{
+  	"psr-4":{"Message\\":["MessageBoard/"]}
   }
 }
